@@ -133,8 +133,7 @@ sea_printf/
 
 ## 👥 Crew
 
-- **Swittzy** - *Captain of the Code*
-- **espadara** - *Master Navigator* <espadara@pirate.capn.gg>
+- **Swittzy/espadara/almoraru** - *Captain of the Code*
 
 ## 📝 License
 
