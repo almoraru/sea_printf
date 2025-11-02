@@ -18,7 +18,7 @@
 #      Filename: Makefile                                                      #
 #      By: espadara <espadara@pirate.capn.gg>                                  #
 #      Created: 2025/11/02 14:13:51 by espadara                                #
-#      Updated: 2025/11/02 14:16:09 by espadara                                #
+#      Updated: 2025/11/02 14:25:21 by espadara                                #
 #                                                                              #
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; #
 
@@ -29,13 +29,13 @@ FLAGS = -Wall -Wextra -Werror -g
 NAME		= libseaprintf.a
 SRCS_PATH	= srcs/
 OBJ_PATH	= objs/
-SOURCES		= sea_printf.c
+SOURCES		= sea_printf.c sea_printf_handlers. sea_printf_arena.c			\
+			  sea_printf_bonus.c
 OBJS		= $(addprefix $(OBJ_PATH), $(SOURCES:.c=.o))
 VPATH		= $(SRCS_PATH)
 
 # --- Library Config (sealib) ---
 SEALIB_DIR	= sealib/
-# This must match the output name from your sealib's Makefile
 SEALIB_LIB	= $(addprefix $(SEALIB_DIR), sealib.a)
 SEALIB_URL	= git@github.com:almoraru/sealib.git
 
@@ -101,7 +101,6 @@ fclean:
 	@echo "[sea_printf] library '$(NAME)' removed."
 	@/bin/rm -f $(TEST_NAME)
 	@echo "[sea_printf] executable '$(TEST_NAME)' removed."
-	@# This line removes the entire cloned sealib directory
 	@/bin/rm -rf $(SEALIB_DIR)
 	@echo "[sea_printf] library 'sealib' directory removed."
 
