@@ -18,7 +18,7 @@
 /*      Filename: sea_printf_handlers.c                                       */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/11/02 15:13:25 by espadara                              */
-/*      Updated: 2025/11/02 15:27:37 by espadara                              */
+/*      Updated: 2025/11/02 15:48:24 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,4 +200,56 @@ void	sea_handle_percent(t_sea_state *state)
   state->total_len++;
   if (state->flags.bits & FLAG_MINUS)
       sea_handle_width(state, 1, 0);
+}
+
+void	sea_handle_float(t_sea_state *state)
+{
+  double	d;
+  char	*s;
+  int		len;
+  int		is_neg;
+  int		prefix_len;
+  char	prefix[2];
+  int	is_zero_padded;
+
+  d = va_arg(state->args, double);
+  is_neg = (d < 0.0);
+  if (is_neg)
+    d = -d;
+  s = sea_arena_ftoa(state, d, &len);
+  if (is_neg)
+    s++;
+  prefix_len = 0;
+  if (is_neg)
+    prefix[prefix_len++] = '-';
+  else if (state->flags.bits & FLAG_PLUS)
+    prefix[prefix_len++] = '+';
+  else if (state->flags.bits & FLAG_SPACE)
+    prefix[prefix_len++] = ' ';
+
+  // Zero padding is only active if FLAG_ZERO is set,
+  // AND FLAG_MINUS is NOT set, AND precision is NOT set.
+  is_zero_padded = (state->flags.bits & FLAG_ZERO)
+    && !(state->flags.bits & FLAG_MINUS)
+    && !(state->flags.bits & FLAG_HAS_PRECISION);
+
+  if (!(state->flags.bits & FLAG_MINUS))
+	{
+      if (is_zero_padded)
+		{
+          write(1, prefix, prefix_len);
+          sea_handle_width(state, len + prefix_len, 1);
+		}
+      else
+		{
+          sea_handle_width(state, len + prefix_len, 0);
+          write(1, prefix, prefix_len);
+		}
+	}
+  else
+    write(1, prefix, prefix_len);
+  write(1, s, len);
+  state->total_len += (len + prefix_len);
+  if (state->flags.bits & FLAG_MINUS)
+    sea_handle_width(state, len + prefix_len, 0);
 }

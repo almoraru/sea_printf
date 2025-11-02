@@ -18,7 +18,7 @@
 /*      Filename: sea_printf.c                                                */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/11/02 14:18:18 by espadara                              */
-/*      Updated: 2025/11/02 15:31:22 by espadara                              */
+/*      Updated: 2025/11/02 15:40:24 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,8 @@ void	sea_parse_conversion(const char **format, t_sea_state *state)
     sea_handle_string(state);
   else if (c == '%')
     sea_handle_string(state);
-  //else if (c == 'f')
-//    sea_handle_float(state);
+  else if (c == 'f')
+    sea_handle_float(state);
   else {
     sea_putchar_fd(c, 1);
     state->total_len++;

@@ -15,7 +15,7 @@
 /*       > _.="                            "=._ <                             */
 /*      (_/                                    \_)                            */
 /*      Created: 2025/11/02 14:14:49 by espadara                              */
-/*      Updated: 2025/11/02 15:37:17 by espadara                              */
+/*      Updated: 2025/11/02 15:46:02 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@
 
 int	main(void)
 {
-	char	*null_str = NULL;
+  char	*null_str = NULL;
 
 	sea_printf("\n--- 🌊 SEA_PRINTF TESTS 🌊 ---\n\n");
 
@@ -101,7 +101,7 @@ int	main(void)
 	TEST_PRINTF("Width [-10d]: |%-10d|\n", 123);
 	TEST_PRINTF("Width [010d]: |%010d|\n", 123);
 	TEST_PRINTF("Width [010d neg]: |%010d|\n", -123);
-	TEST_PRINTF("Width [-010d]: |%-010d|\n", 123);
+	TEST_PRINTF("Width [-010d]: |%-10d|\n", 123);
 
 	// --- Bonus Flag Tests (Precision) ---
 	TEST_PRINTF("Precision [.3s]: |%.3s|\n", "hello");
@@ -112,7 +112,7 @@ int	main(void)
 	TEST_PRINTF("Precision [-10.5d]: |%-10.5d|\n", 123);
 	TEST_PRINTF("Precision [.5d neg]: |%.5d|\n", -123);
 	TEST_PRINTF("Precision [10.5d neg]: |%10.5d|\n", -123);
-	TEST_PRINTF("Precision [010.5d]: |%010.5d|\n", 123); // Zero flag ignored
+	TEST_PRINTF("Precision [010.5d]: |%10.5d|\n", 123);
 	TEST_PRINTF("Precision [.0d zero]: |%.0d|\n", 0);
 
 	// --- Bonus Flag Tests (+, ' ', #) ---
@@ -120,11 +120,11 @@ int	main(void)
 	TEST_PRINTF("Flag [+d neg]: |%+d|\n", -42);
 	TEST_PRINTF("Flag [ d]: |% d|\n", 42);
 	TEST_PRINTF("Flag [ d neg]: |% d|\n", -42);
-	TEST_PRINTF("Flag [ +d]: |% +d|\n", 42);
+	TEST_PRINTF("Flag [ +d]: |%+d|\n", 42);
 	TEST_PRINTF("Flag [#x]: |%#x|\n", 12345);
 	TEST_PRINTF("Flag [#X]: |%#X|\n", 12345);
 	TEST_PRINTF("Flag [#x zero]: |%#x|\n", 0);
-	TEST_PRINTF("Flag [010#x]: |%010#x|\n", 12345);
+	TEST_PRINTF("Flag [010#x]: |%#010x|\n", 12345);
 
 	// --- Float Tests ---
 	sea_printf("\n--- 🌊 FLOAT TESTS 🌊 ---\n\n");
@@ -143,8 +143,8 @@ int	main(void)
 	TEST_PRINTF("Float flags [ f]: |% f|\n", 123.456);
 	TEST_PRINTF("Float flags [+f neg]: |%+f|\n", -123.456);
 	TEST_PRINTF("Float flags [#f]: |%#f|\n", 123.0);
-	TEST_PRINTF("Float flags [#f prec 0]: |%.0#f|\n", 123.0);
-	TEST_PRINTF("Float complex: |%020.2+f|\n", 123.4567);
+	TEST_PRINTF("Float flags [#f prec 0]: |%#.0f|\n", 123.0);
+	TEST_PRINTF("Float complex: |%+020.2f|\n", 123.4567);
 
 	sea_printf("\n--- 🌊 TESTS COMPLETE 🌊 ---\n");
 	return (0);

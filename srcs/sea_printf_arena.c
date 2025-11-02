@@ -18,7 +18,7 @@
 /*      Filename: sea_printf_arena.c                                          */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/11/02 15:08:47 by espadara                              */
-/*      Updated: 2025/11/02 15:09:32 by espadara                              */
+/*      Updated: 2025/11/02 15:39:45 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,4 +80,48 @@ char	*sea_arena_itoa(t_sea_state *state, long long n)
 	if (is_neg)
       str[0] = '-';
 	return (str);
+}
+
+char	*sea_arena_ftoa(t_sea_state *state, double d, int *out_len)
+{
+  int			prec;
+  double		rounder;
+  long long	int_part;
+  double		frac_part;
+  char		*int_str;
+  int			int_len;
+  char		*final_str;
+  char		*p;
+  int			i;
+
+  prec = 6;
+  if (state->flags.bits & FLAG_HAS_PRECISION)
+    prec = state->flags.precision;
+  rounder = 0.5;
+  i = 0;
+  while (i++ < prec)
+    rounder /= 10.0;
+  d += rounder;
+  int_part = (long long)d;
+  frac_part = d - (double)int_part;
+  int_str = sea_arena_itoa(state, int_part);
+  int_len = sea_strlen(int_str);
+  if (int_str[0] == '-')
+    int_len--;
+  *out_len = int_len + (prec > 0 || (state->flags.bits & FLAG_HASH) ? 1 : 0) + prec;
+  final_str = sea_arena_alloc(state->arena, *out_len + 1);
+  p = final_str;
+  sea_memcpy_fast(p, int_str, int_len + (int_str[0] == '-'));
+  p += int_len + (int_str[0] == '-');
+  if (prec > 0 || (state->flags.bits & FLAG_HASH))
+    *p++ = '.';
+  i = 0;
+  while (i++ < prec)
+	{
+      frac_part *= 10.0;
+      *p++ = (int)frac_part + '0';
+      frac_part -= (int)frac_part;
+	}
+  *p = '\0';
+  return (final_str);
 }
