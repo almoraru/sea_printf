@@ -18,7 +18,7 @@
 /*      Filename: sea_printf_handlers.c                                       */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/11/02 15:13:25 by espadara                              */
-/*      Updated: 2025/11/02 15:52:57 by espadara                              */
+/*      Updated: 2025/11/02 16:09:24 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,15 +63,30 @@ void	sea_handle_pointer(t_sea_state *state)
   char				*s;
   int					len;
 
-    p = (unsigned long long)va_arg(state->args, void *);
-    s = sea_arena_utoa_base(state, p, "0123456789abcdef");
-    len = sea_strlen(s) + 2;
-    if (!(state->flags.bits & FLAG_MINUS))
+  p = (unsigned long long)va_arg(state->args, void *);
+  if (p == 0)
+	{
+      s = "(nil)";
+      len = 5;
+      if ((state->flags.bits & FLAG_HAS_PRECISION)
+          && state->flags.precision == 0)
+        len = 0;
+      if (!(state->flags.bits & FLAG_MINUS))
+        sea_handle_width(state, len, 0);
+      write(1, s, len);
+      state->total_len += len;
+      if (state->flags.bits & FLAG_MINUS)
+        sea_handle_width(state, len, 0);
+      return ;
+	}
+  s = sea_arena_utoa_base(state, p, "0123456789abcdef");
+  len = sea_strlen(s) + 2;
+	if (!(state->flags.bits & FLAG_MINUS))
       sea_handle_width(state, len, 0);
-    sea_putstr_fd("0x", 1);
-    sea_putstr_fd(s, 1);
-    state->total_len += len;
-    if (state->flags.bits & FLAG_MINUS)
+	sea_putstr_fd("0x", 1);
+	sea_putstr_fd(s, 1);
+	state->total_len += len;
+	if (state->flags.bits & FLAG_MINUS)
       sea_handle_width(state, len, 0);
 }
 
@@ -239,8 +254,6 @@ void	sea_handle_float(t_sea_state *state)
 	if (is_neg)
 		d = -d;
 	s = sea_arena_ftoa(state, d, &len);
-	if (is_neg)
-		s++;
 	prefix_len = 0;
 	if (is_neg)
 		prefix[prefix_len++] = '-';

@@ -18,7 +18,7 @@
 /*      Filename: sea_printf.c                                                */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/11/02 14:18:18 by espadara                              */
-/*      Updated: 2025/11/02 15:54:31 by espadara                              */
+/*      Updated: 2025/11/02 15:58:26 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,17 +33,17 @@ void	sea_parse_conversion(const char **format, t_sea_state *state)
   else if (c == 's')
     sea_handle_string(state);
   else if (c == 'p')
-    sea_handle_string(state);
+    sea_handle_pointer(state);
   else if (c == 'd' || c == 'i')
-    sea_handle_string(state);
+    sea_handle_int(state);
   else if (c == 'u')
-    sea_handle_string(state);
+    sea_handle_unsigned(state);
   else if (c == 'x')
-    sea_handle_string(state);
+    sea_handle_hex(state, 0);
   else if (c == 'X')
-    sea_handle_string(state);
+    sea_handle_hex(state, 1);
   else if (c == '%')
-    sea_handle_string(state);
+    sea_handle_percent(state);
   else if (c == 'f')
     sea_handle_float(state);
   else {

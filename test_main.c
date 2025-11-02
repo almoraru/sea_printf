@@ -15,62 +15,76 @@
 /*       > _.="                            "=._ <                             */
 /*      (_/                                    \_)                            */
 /*      Created: 2025/11/02 14:14:49 by espadara                              */
-/*      Updated: 2025/11/02 15:46:02 by espadara                              */
+/*      Updated: 2025/11/02 16:11:55 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sea_printf.h"
 #include <stdio.h>
 #include <math.h>
+#include <limits.h>
+
+// --- Test Globals ---
+static int	g_tests_passed = 0;
+static int	g_tests_total = 0;
+
+// --- Colors ---
+#define RED "\033[0;31m"
+#define GREEN "\033[0;32m"
+#define RESET "\033[0m"
 
 #define TEST_PRINTF(format, ...) \
 	do { \
 		int sea_ret, real_ret; \
+		g_tests_total++; \
 		printf("--- Test Case ---\n"); \
-		printf("Format: [%s]\n", format); \
-		printf("sea_printf: "); \
+		printf("Format:    [%s]\n", format); \
+		printf("sea_printf:  ["); \
 		fflush(stdout); \
 		sea_ret = sea_printf(format, __VA_ARGS__); \
 		fflush(stdout); \
-		printf("\n"); \
-		printf("   printf: "); \
+		printf("]\n"); \
+		printf("   _printf:  ["); \
 		fflush(stdout); \
 		real_ret = printf(format, __VA_ARGS__); \
 		fflush(stdout); \
-		printf("\n"); \
-		if (sea_ret == real_ret) \
-			printf("Return: OK (sea: %d, real: %d)\n\n", sea_ret, real_ret); \
-		else \
-			printf("Return: FAIL (sea: %d, real: %d)\n\n", sea_ret, real_ret); \
+		printf("]\n"); \
+		if (sea_ret == real_ret) { \
+			printf(GREEN "Return: OK (sea: %d, real: %d)\n\n" RESET, sea_ret, real_ret); \
+			g_tests_passed++; \
+		} else { \
+			printf(RED "Return: FAIL (sea: %d, real: %d)\n\n" RESET, sea_ret, real_ret); \
+		} \
 	} while (0)
 
 // A version for tests with no arguments
 #define TEST_PRINTF_NO_ARGS(format) \
 	do { \
 		int sea_ret, real_ret; \
+		g_tests_total++; \
 		printf("--- Test Case ---\n"); \
-		printf("Format: [%s]\n", format); \
-		printf("sea_printf: "); \
+		printf("Format:    [%s]\n", format); \
+		printf("sea_printf:  ["); \
 		fflush(stdout); \
 		sea_ret = sea_printf(format); \
 		fflush(stdout); \
-		printf("\n"); \
-		printf("   printf: "); \
+		printf("]\n"); \
+		printf("   _printf:  ["); \
 		fflush(stdout); \
 		real_ret = printf(format); \
 		fflush(stdout); \
-		printf("\n"); \
-		if (sea_ret == real_ret) \
-			printf("Return: OK (sea: %d, real: %d)\n\n", sea_ret, real_ret); \
-		else \
-			printf("Return: FAIL (sea: %d, real: %d)\n\n", sea_ret, real_ret); \
+		printf("]\n"); \
+		if (sea_ret == real_ret) { \
+			printf(GREEN "Return: OK (sea: %d, real: %d)\n\n" RESET, sea_ret, real_ret); \
+			g_tests_passed++; \
+		} else { \
+			printf(RED "Return: FAIL (sea: %d, real: %d)\n\n" RESET, sea_ret, real_ret); \
+		} \
 	} while (0)
 
-int	main(void)
+void	run_all_tests(void)
 {
-  char	*null_str = NULL;
-
-	sea_printf("\n--- 🌊 SEA_PRINTF TESTS 🌊 ---\n\n");
+	char	*null_str = NULL;
 
 	// --- Basic Tests ---
 	TEST_PRINTF_NO_ARGS("Hello from sea_printf!\n");
@@ -127,7 +141,6 @@ int	main(void)
 	TEST_PRINTF("Flag [010#x]: |%#010x|\n", 12345);
 
 	// --- Float Tests ---
-	sea_printf("\n--- 🌊 FLOAT TESTS 🌊 ---\n\n");
 	TEST_PRINTF("Float basic: %f\n", 123.456);
 	TEST_PRINTF("Float negative: %f\n", -123.456);
 	TEST_PRINTF("Float precision [.2f]: %.2f\n", 1.999);
@@ -145,7 +158,22 @@ int	main(void)
 	TEST_PRINTF("Float flags [#f]: |%#f|\n", 123.0);
 	TEST_PRINTF("Float flags [#f prec 0]: |%#.0f|\n", 123.0);
 	TEST_PRINTF("Float complex: |%+020.2f|\n", 123.4567);
+}
 
-	sea_printf("\n--- 🌊 TESTS COMPLETE 🌊 ---\n");
-	return (0);
+int	main(void)
+{
+	sea_printf("--- 🌊 SEA_PRINTF TESTS 🌊 ---\n");
+	run_all_tests();
+	sea_printf("\n--- 🌊 SUMMARY 🌊 ---\n");
+	if (g_tests_passed == g_tests_total)
+	{
+		printf(GREEN "All tests passed! [%d / %d]\n" RESET,
+			g_tests_passed, g_tests_total);
+	}
+	else
+	{
+		printf(RED "Tests failed: [%d / %d]\n" RESET,
+			g_tests_passed, g_tests_total);
+	}
+	return (g_tests_passed != g_tests_total);
 }
