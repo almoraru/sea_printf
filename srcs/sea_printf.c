@@ -18,7 +18,7 @@
 /*      Filename: sea_printf.c                                                */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/11/02 14:18:18 by espadara                              */
-/*      Updated: 2025/11/02 15:06:54 by espadara                              */
+/*      Updated: 2025/11/02 15:31:22 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	sea_parse_conversion(const char **format, t_sea_state *state)
   //else if (c == 'f')
 //    sea_handle_float(state);
   else {
-    stea_putchar_fd(c, 1);
+    sea_putchar_fd(c, 1);
     state->total_len++;
   }
 }
@@ -65,9 +65,9 @@ int	sea_printf(const char *format, ...){
       if (*format == '%')
         {
           format++;
-          sea_memset(flags, 0, sizeof(t_flags));
+          sea_memset(&state.flags, 0, sizeof(t_flags));
           sea_parse_flags(&format, &state);
-          seas_parse_conversion(&format, &state);
+          sea_parse_conversion(&format, &state);
         } else {
         sea_putchar_fd(*format, 1);
         state.total_len++;
@@ -76,5 +76,5 @@ int	sea_printf(const char *format, ...){
     }
   va_end(state.args);
   sea_arena_free(state.arena);
-	return (count);
+  return (state.total_len);
 }

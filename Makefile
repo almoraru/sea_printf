@@ -18,7 +18,7 @@
 #      Filename: Makefile                                                      #
 #      By: espadara <espadara@pirate.capn.gg>                                  #
 #      Created: 2025/11/02 14:13:51 by espadara                                #
-#      Updated: 2025/11/02 14:25:21 by espadara                                #
+#      Updated: 2025/11/02 15:34:44 by espadara                                #
 #                                                                              #
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; #
 
@@ -29,8 +29,8 @@ FLAGS = -Wall -Wextra -Werror -g
 NAME		= libseaprintf.a
 SRCS_PATH	= srcs/
 OBJ_PATH	= objs/
-SOURCES		= sea_printf.c sea_printf_handlers. sea_printf_arena.c			\
-			  sea_printf_bonus.c
+SOURCES		= sea_printf.c sea_printf_handlers.c sea_printf_arena.c			\
+				sea_printf_bonus.c
 OBJS		= $(addprefix $(OBJ_PATH), $(SOURCES:.c=.o))
 VPATH		= $(SRCS_PATH)
 
@@ -59,7 +59,7 @@ $(NAME): $(OBJS) $(SEALIB_LIB)
 # --- Build Test Executable ---
 test: all
 	@echo "Linking to create $(TEST_NAME)..."
-	@$(CC) $(FLAGS) $(INC) $(TEST_SRC) $(NAME) $(SEALIB_LIB) -o $(TEST_NAME)
+	@$(CC) $(FLAGS) $(INC) $(TEST_SRC) $(NAME) $(SEALIB_LIB) -o $(TEST_NAME) -lm
 	@echo "Executable '$(TEST_NAME)' created. ✨ Run with ./$(TEST_NAME)"
 
 # --- Build Sealib (from Git) ---
