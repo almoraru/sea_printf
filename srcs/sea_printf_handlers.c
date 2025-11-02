@@ -18,7 +18,7 @@
 /*      Filename: sea_printf_handlers.c                                       */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/11/02 15:13:25 by espadara                              */
-/*      Updated: 2025/11/02 16:09:24 by espadara                              */
+/*      Updated: 2025/11/02 16:21:09 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void	sea_handle_int(t_sea_state *state)
 	int			is_neg;
 	int			prefix_len;
 	char		prefix[2];
-	int			is_zero_padded; // <-- Add this variable
+	int			is_zero_padded;
 
 	n = va_arg(state->args, int);
 	is_neg = (n < 0);
@@ -122,16 +122,13 @@ void	sea_handle_int(t_sea_state *state)
 	else if (state->flags.bits & FLAG_SPACE)
 		prefix[prefix_len++] = ' ';
 
-	// <-- Add this logic -->
-	// Zero padding is only active if FLAG_ZERO is set,
-	// AND FLAG_MINUS is NOT set, AND precision is NOT set.
 	is_zero_padded = (state->flags.bits & FLAG_ZERO)
 		&& !(state->flags.bits & FLAG_MINUS)
 		&& !(state->flags.bits & FLAG_HAS_PRECISION);
 
 	if (!(state->flags.bits & FLAG_MINUS))
 	{
-		if (is_zero_padded) // <-- Use the new variable
+		if (is_zero_padded)
 		{
 			write(1, prefix, prefix_len);
 			sea_handle_width(state, len + prefix_len, 1);
@@ -155,7 +152,7 @@ void	sea_handle_unsigned(t_sea_state *state)
 	unsigned int	n;
 	char			*s;
 	int				len;
-	int				is_zero_padded; // <-- Add this variable
+	int				is_zero_padded;
 
 	n = va_arg(state->args, unsigned int);
 	s = sea_arena_utoa_base(state, n, "0123456789");
@@ -165,13 +162,12 @@ void	sea_handle_unsigned(t_sea_state *state)
 		len = 0;
 	sea_handle_precision(state, &s, &len, 0);
 
-	// <-- Add this logic -->
 	is_zero_padded = (state->flags.bits & FLAG_ZERO)
 		&& !(state->flags.bits & FLAG_MINUS)
 		&& !(state->flags.bits & FLAG_HAS_PRECISION);
 
 	if (!(state->flags.bits & FLAG_MINUS))
-		sea_handle_width(state, len, is_zero_padded); // <-- Use the new variable
+		sea_handle_width(state, len, is_zero_padded);
 	write(1, s, len);
 	state->total_len += len;
 	if (state->flags.bits & FLAG_MINUS)
@@ -185,7 +181,7 @@ void	sea_handle_hex(t_sea_state *state, int is_upper)
 	char			*base;
 	int				len;
 	int				prefix_len;
-	int				is_zero_padded; // <-- Add this variable
+	int				is_zero_padded;
 
 	n = va_arg(state->args, unsigned int);
 	if (is_upper)
@@ -202,14 +198,13 @@ void	sea_handle_hex(t_sea_state *state, int is_upper)
 	sea_handle_precision(state, &s, &len, 0);
 	prefix_len = (state->flags.bits & FLAG_HASH) ? 2 : 0;
 
-	// <-- Add this logic -->
 	is_zero_padded = (state->flags.bits & FLAG_ZERO)
 		&& !(state->flags.bits & FLAG_MINUS)
 		&& !(state->flags.bits & FLAG_HAS_PRECISION);
 
 	if (!(state->flags.bits & FLAG_MINUS))
 	{
-		if (is_zero_padded) // <-- Use the new variable
+		if (is_zero_padded)
 		{
 			if (prefix_len)
 				(is_upper) ? sea_putstr_fd("0X", 1) : sea_putstr_fd("0x", 1);
