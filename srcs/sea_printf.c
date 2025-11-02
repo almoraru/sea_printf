@@ -18,11 +18,39 @@
 /*      Filename: sea_printf.c                                                */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/11/02 14:18:18 by espadara                              */
-/*      Updated: 2025/11/02 14:35:26 by espadara                              */
+/*      Updated: 2025/11/02 15:06:54 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sea_printf.h"
+
+void	sea_parse_conversion(const char **format, t_sea_state *state)
+{
+  char	c = **format;
+
+  if (c == 'c')
+    sea_handle_char(state);
+  else if (c == 's')
+    sea_handle_string(state);
+  else if (c == 'p')
+    sea_handle_string(state);
+  else if (c == 'd' || c == 'i')
+    sea_handle_string(state);
+  else if (c == 'u')
+    sea_handle_string(state);
+  else if (c == 'x')
+    sea_handle_string(state);
+  else if (c == 'X')
+    sea_handle_string(state);
+  else if (c == '%')
+    sea_handle_string(state);
+  //else if (c == 'f')
+//    sea_handle_float(state);
+  else {
+    stea_putchar_fd(c, 1);
+    state->total_len++;
+  }
+}
 
 int	sea_printf(const char *format, ...){
   t_sea_state state;
@@ -37,7 +65,7 @@ int	sea_printf(const char *format, ...){
       if (*format == '%')
         {
           format++;
-          sea_reset_flags(&state.flags);
+          sea_memset(flags, 0, sizeof(t_flags));
           sea_parse_flags(&format, &state);
           seas_parse_conversion(&format, &state);
         } else {
