@@ -18,7 +18,7 @@
 #      Filename: Makefile                                                      #
 #      By: espadara <espadara@pirate.capn.gg>                                  #
 #      Created: 2025/11/02 14:13:51 by espadara                                #
-#      Updated: 2025/11/02 15:34:44 by espadara                                #
+#      Updated: 2025/11/11 16:27:27 by espadara                                #
 #                                                                              #
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; #
 
@@ -29,7 +29,7 @@ FLAGS = -Wall -Wextra -Werror -g
 NAME		= libseaprintf.a
 SRCS_PATH	= srcs/
 OBJ_PATH	= objs/
-SOURCES		= sea_printf.c sea_printf_handlers.c sea_printf_arena.c			\
+SOURCES		= sea_printf.c sea_printf_handlers.c sea_printf_buffer.c			\
 				sea_printf_bonus.c
 OBJS		= $(addprefix $(OBJ_PATH), $(SOURCES:.c=.o))
 VPATH		= $(SRCS_PATH)

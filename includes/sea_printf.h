@@ -18,7 +18,7 @@
 /*      Filename: sea_printf.h                                                */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/11/02 14:16:42 by espadara                              */
-/*      Updated: 2025/11/02 15:42:55 by espadara                              */
+/*      Updated: 2025/11/11 16:26:40 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@
 # define FLAG_SPACE		8	// (1 << 3)
 # define FLAG_PLUS			16	// (1 << 4)
 # define FLAG_HAS_PRECISION 32	// (1 << 5)
-
+# define PAGE               4096
 
 /* STRUCTURES */
 typedef struct s_flags
@@ -54,7 +54,10 @@ typedef struct s_flags
 
 typedef struct s_sea_state
 {
-	t_mem	*arena;
+	char buffer[PAGE];
+	char conversion[PAGE];
+	size_t buf_pos;
+	size_t conv_pos;
 	va_list	args;
 	t_flags	flags;
 	int		total_len;
@@ -85,11 +88,15 @@ void	sea_handle_hex(t_sea_state *state, int is_upper);
 void	sea_handle_percent(t_sea_state *state);
 void	sea_handle_float(t_sea_state *state);
 
-/* --- Arena Allocators (sea_printf_arena.c) --- */
+/* --- Buffer Functions (sea_printf_buffer.c) --- */
 
-char	*sea_arena_itoa(t_sea_state *state, long long n);
-char	*sea_arena_utoa_base(t_sea_state *state, unsigned long long n,
-			char *base_chars);
-char	*sea_arena_ftoa(t_sea_state *state, double d, int *len);
+void    sea_state_init(t_sea_state *state);
+void    sea_state_flush(t_sea_state *state);
+void    sea_putchar_buf(t_sea_state *state, char c);
+void    sea_putstr_buf(t_sea_state *state, const char *s, size_t len);
+char    *sea_itoa_buf(t_sea_state *state, long long n);
+char    *sea_utoa_base_buf(t_sea_state *state, unsigned long long n,
+            char *base_chars);
+char	*sea_ftoa_buf(t_sea_state *state, double d, int *out_len);
 
 #endif

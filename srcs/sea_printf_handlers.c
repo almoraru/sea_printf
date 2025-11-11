@@ -18,10 +18,9 @@
 /*      Filename: sea_printf_handlers.c                                       */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/11/02 15:13:25 by espadara                              */
-/*      Updated: 2025/11/02 16:21:09 by espadara                              */
+/*      Updated: 2025/11/11 16:28:16 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "sea_printf.h"
 
 void	sea_handle_char(t_sea_state *state)
@@ -79,7 +78,7 @@ void	sea_handle_pointer(t_sea_state *state)
         sea_handle_width(state, len, 0);
       return ;
 	}
-  s = sea_arena_utoa_base(state, p, "0123456789abcdef");
+  s = sea_utoa_base_buf(state, p, "0123456789abcdef");
   len = sea_strlen(s) + 2;
 	if (!(state->flags.bits & FLAG_MINUS))
       sea_handle_width(state, len, 0);
@@ -102,7 +101,7 @@ void	sea_handle_int(t_sea_state *state)
 
 	n = va_arg(state->args, int);
 	is_neg = (n < 0);
-	s = sea_arena_itoa(state, n);
+	s = sea_itoa_buf(state, n);
 	len = sea_strlen(s);
 	if (n == 0 && (state->flags.bits & FLAG_HAS_PRECISION)
 		&& state->flags.precision == 0)
@@ -155,7 +154,7 @@ void	sea_handle_unsigned(t_sea_state *state)
 	int				is_zero_padded;
 
 	n = va_arg(state->args, unsigned int);
-	s = sea_arena_utoa_base(state, n, "0123456789");
+	s = sea_utoa_base_buf(state, n, "0123456789");
 	len = sea_strlen(s);
 	if (n == 0 && (state->flags.bits & FLAG_HAS_PRECISION)
 		&& state->flags.precision == 0)
@@ -188,7 +187,7 @@ void	sea_handle_hex(t_sea_state *state, int is_upper)
 		base = "0123456789ABCDEF";
 	else
 		base = "0123456789abcdef";
-	s = sea_arena_utoa_base(state, n, base);
+	s = sea_utoa_base_buf(state, n, base);
 	len = sea_strlen(s);
 	if (n == 0 && (state->flags.bits & FLAG_HAS_PRECISION)
 		&& state->flags.precision == 0)
@@ -248,7 +247,7 @@ void	sea_handle_float(t_sea_state *state)
 	is_neg = (d < 0.0);
 	if (is_neg)
 		d = -d;
-	s = sea_arena_ftoa(state, d, &len);
+	s = sea_ftoa_buf(state, d, &len);
 	prefix_len = 0;
 	if (is_neg)
 		prefix[prefix_len++] = '-';
