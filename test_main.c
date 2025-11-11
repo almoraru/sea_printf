@@ -15,7 +15,7 @@
 /*       > _.="                            "=._ <                             */
 /*      (_/                                    \_)                            */
 /*      Created: 2025/11/02 14:14:49 by espadara                              */
-/*      Updated: 2025/11/02 16:11:55 by espadara                              */
+/*      Updated: 2025/11/11 17:12:33 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,80 @@ static int	g_tests_total = 0;
 			printf(RED "Return: FAIL (sea: %d, real: %d)\n\n" RESET, sea_ret, real_ret); \
 		} \
 	} while (0)
+
+#define TEST_PRINTF_SILENT(desc, format, ...) \
+	do { \
+		int sea_ret, real_ret; \
+		int saved_stdout; \
+		int devnull; \
+		g_tests_total++; \
+		printf("--- Test Case ---\n"); \
+		printf("%s\n", desc); \
+		fflush(stdout); \
+		/* Redirect stdout to /dev/null */ \
+		saved_stdout = dup(1); \
+		devnull = open("/dev/null", O_WRONLY); \
+		dup2(devnull, 1); \
+		/* Run the tests silently */ \
+		sea_ret = sea_printf(format, __VA_ARGS__); \
+		real_ret = printf(format, __VA_ARGS__); \
+		/* Restore stdout */ \
+		fflush(stdout); \
+		dup2(saved_stdout, 1); \
+		close(devnull); \
+		close(saved_stdout); \
+		/* Now print results to real stdout */ \
+		if (sea_ret == real_ret) { \
+			printf(GREEN "Return: OK (sea: %d, real: %d) - Output suppressed\n\n" RESET, sea_ret, real_ret); \
+			g_tests_passed++; \
+		} else { \
+			printf(RED "Return: FAIL (sea: %d, real: %d)\n\n" RESET, sea_ret, real_ret); \
+		} \
+	} while (0)
+
+static char *generate_test_string(size_t size)
+{
+	static char buffer[20000];  // Big enough for 16KB + overhead
+	size_t i;
+
+	if (size > sizeof(buffer) - 1)
+		size = sizeof(buffer) - 1;
+
+	for (i = 0; i < size - 1; i++)
+		buffer[i] = 'A' + (i % 26);  // Fill with A-Z pattern
+	buffer[i] = '\0';
+	return buffer;
+}
+
+void	run_buffer_stress_tests(void)
+{
+	char *str_4kb = generate_test_string(4096);
+	char *str_8kb = generate_test_string(8192);
+	char *str_16kb = generate_test_string(16384);
+
+	sea_printf("\n--- 🌊 BUFFER STRESS TESTS 🌊 ---\n");
+	sea_printf("Testing buffer overflow handling with large strings...\n\n");
+
+	// 4KB test - exactly one buffer size
+	TEST_PRINTF_SILENT("Stress test: 4KB string (1x buffer size)",
+		"4KB: %s\n", str_4kb);
+
+	// 8KB test - requires buffer flush
+	TEST_PRINTF_SILENT("Stress test: 8KB string (2x buffer size)",
+		"8KB: %s\n", str_8kb);
+
+	// 16KB test - requires multiple flushes
+	TEST_PRINTF_SILENT("Stress test: 16KB string (4x buffer size)",
+		"16KB: %s\n", str_16kb);
+
+	// Mixed test with multiple large strings
+	TEST_PRINTF_SILENT("Stress test: Multiple large strings",
+		"First: %s Second: %s\n", str_4kb, str_4kb);
+
+	// Test with integers mixed in
+	TEST_PRINTF_SILENT("Stress test: Large string with formatting",
+		"Int: %d, String: %s, Hex: %x\n", 42, str_8kb, 255);
+}
 
 void	run_all_tests(void)
 {
@@ -164,6 +238,7 @@ int	main(void)
 {
 	sea_printf("--- 🌊 SEA_PRINTF TESTS 🌊 ---\n");
 	run_all_tests();
+	run_buffer_stress_tests();
 	sea_printf("\n--- 🌊 SUMMARY 🌊 ---\n");
 	if (g_tests_passed == g_tests_total)
 	{
