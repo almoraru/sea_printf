@@ -17,17 +17,29 @@
 
 # 🌊 SEA_PRINTF 🏴‍☠️
 
-**A pirate's implementation of printf, sailing the C seas!**
+**A pirate's implementation of printf, sailing the C seas with ZERO mallocs!**
 
-> *"Why use the landlubber's printf when ye can have yer own sea_printf?"*
+> *"Why use the landlubber's printf when ye can have yer own sea_printf, free from the chains of heap allocation?"*
 
 ## 📜 About This Treasure
 
-**sea_printf** be a custom implementation of the mighty `printf` function, crafted by the hands of **Swittzy** and **espadara** aboard the good ship *Code Kraken*. This library be built with performance in mind, using arena allocation to manage memory like a true captain manages their crew!
+**sea_printf** be a custom implementation of the mighty `printf` function, crafted by the hands of **Swittzy** and **espadara** aboard the good ship *Code Kraken*. This library be built with performance and memory efficiency in mind, using **pure stack-based buffers** with nary a malloc in sight!
 
 ## ⚓ Features
 
-- ✨ **Full printf compatibility** - All yer favorite format specifiers
+### 🚀 **Zero Malloc - Pure Stack Power!**
+- **No heap allocations** - All operations use fixed 4KB stack buffers
+- **Predictable memory usage** - No fragmentation, no leaks, no surprises!
+- **Embedded-friendly** - Perfect for systems where malloc be forbidden
+- **Lightning fast** - No malloc overhead, just pure speed!
+
+### ⚡ **High Performance**
+- **4KB output buffer** - Reduces system calls dramatically
+- **4KB conversion buffer** - Handles all number-to-string conversions in place
+- **SIMD-optimized operations** - Uses fast `sea_memcpy_fast` from sealib
+- **Cache-friendly** - Buffers sized perfectly for L1/L2 cache
+
+### ✨ **Full printf compatibility** - All yer favorite format specifiers
 - 🎯 **Conversion specifiers supported:**
   - `%c` - Character (a single letter from the treasure map)
   - `%s` - String (tales of the seven seas)
@@ -38,8 +50,14 @@
   - `%%` - Literal percent (because even pirates need percentages)
   - `%f` - Floating point (the tide be changin')
 
-- 🚀 **Arena allocation** - Fast memory management, no leaks on this ship!
-- 🎨 **Bonus flags support** - Width, precision, and more formatting treasures
+- 🎨 **Bonus flags support:**
+  - Width specifiers (`%10d`)
+  - Precision (`.5f`)
+  - Left-align (`-`)
+  - Zero-padding (`0`)
+  - Sign flags (`+`, ` `)
+  - Alternate form (`#`)
+
 - 🌊 **Built on sealib** - Our very own pirate utility library
 
 ## 🗺️ Installation & Compilation
@@ -106,7 +124,7 @@ sea_printf/
 ├── srcs/
 │   ├── sea_printf.c          # Core printf implementation
 │   ├── sea_printf_handlers.c # Format specifier handlers
-│   ├── sea_printf_arena.c    # Arena allocator
+│   ├── sea_printf_buffer.c   # Buffer management (malloc-free!)
 │   └── sea_printf_bonus.c    # Bonus flag parsing
 ├── sealib/                   # Pirate utility library (auto-cloned)
 ├── test_main.c               # Test suite
@@ -126,10 +144,31 @@ sea_printf/
 
 ## ⚔️ Technical Details
 
-- **Memory Management**: Uses arena allocation for efficient memory handling
-- **Dependencies**: Requires `sealib` (automatically fetched)
-- **Compilation Flags**: `-Wall -Wextra -Werror -g`
+### Memory Architecture
+- **Zero heap allocations** - Everything uses stack-based buffers
+- **Dual 4KB buffers:**
+  - Output buffer for final formatted text
+  - Conversion buffer for number-to-string operations
+- **Automatic flushing** when buffers fill
+- **No malloc, no free, no leaks!** 🎉
+
+### Performance Benefits
+- **Reduced system calls** - Buffered output means fewer `write()` calls
+- **No malloc overhead** - Eliminates heap allocation/deallocation time
+- **Cache-friendly** - 4KB buffers fit perfectly in CPU cache
+- **SIMD operations** - Uses optimized `sea_memcpy_fast` from sealib
+- **Predictable performance** - No surprise GC pauses or allocation delays
+
+### Perfect For
+- 🔧 **Embedded systems** - Where malloc might not even exist
+- ⚡ **Real-time applications** - Predictable, deterministic behavior
+- 🎮 **Game development** - No allocation spikes during gameplay
+- 🔒 **Systems programming** - When you need total control over memory
+
+### Compilation
+- **Flags**: `-Wall -Wextra -Werror -g`
 - **Output**: Static library `libseaprintf.a`
+- **Dependencies**: Requires `sealib` (automatically fetched)
 
 ## 👥 Crew
 
@@ -141,7 +180,7 @@ This project be sailing under the MIT License. See the `LICENSE` file fer detail
 
 ## 🌊 Fair Winds and Following Seas!
 
-May yer code be bug-free and yer coffee be strong! ☕🏴‍☠️
+May yer code be bug-free, yer buffers never overflow, and yer malloc count stay at zero! ☕🏴‍☠️
 
 ```
      ~    ~   ~  ~     ~    ~ ~  ~      ~     ~  ~
@@ -151,4 +190,6 @@ May yer code be bug-free and yer coffee be strong! ☕🏴‍☠️
 
 ---
 
-*"In code we trust, in pirates we sail!"* ⚓
+*"In code we trust, in pirates we sail, and in stack buffers we prevail!"* ⚓
+
+> **Pro tip**: No mallocs were harmed in the making of this library! 🏴‍☠️
