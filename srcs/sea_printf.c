@@ -18,7 +18,7 @@
 /*      Filename: sea_printf.c                                                */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/11/02 14:18:18 by espadara                              */
-/*      Updated: 2025/11/11 16:28:48 by espadara                              */
+/*      Updated: 2025/11/11 16:51:28 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,11 +67,11 @@ int	sea_printf(const char *format, ...){
           sea_parse_flags(&format, &state);
           sea_parse_conversion(&format, &state);
         } else {
-        sea_putchar_fd(*format, 1);
-        state.total_len++;
+        sea_putchar_buf(&state, *format);
         format++;
       }
     }
+  sea_state_flush(&state);
   va_end(state.args);
   return (state.total_len);
 }

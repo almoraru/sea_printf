@@ -18,7 +18,7 @@
 /*      Filename: sea_printf_handlers.c                                       */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/11/02 15:13:25 by espadara                              */
-/*      Updated: 2025/11/11 16:28:16 by espadara                              */
+/*      Updated: 2025/11/11 16:43:55 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 #include "sea_printf.h"
@@ -30,8 +30,7 @@ void	sea_handle_char(t_sea_state *state)
   c = va_arg(state->args, int);
   if (!(state->flags.bits & FLAG_MINUS))
     sea_handle_width(state, 1, 0);
-  sea_putchar_fd(c, 1);
-  state->total_len++;
+  sea_putchar_buf(state, c);
   if (state->flags.bits & FLAG_MINUS)
     sea_handle_width(state, 1, 0);
 }
@@ -50,7 +49,7 @@ void	sea_handle_string(t_sea_state *state)
       len = state->flags.precision;
     if (!(state->flags.bits & FLAG_MINUS))
       sea_handle_width(state, len, 0);
-    write(1, s, len);
+    sea_putstr_buf(state, s, len);
     state->total_len += len;
     if (state->flags.bits & FLAG_MINUS)
       sea_handle_width(state, len, 0);
@@ -72,7 +71,7 @@ void	sea_handle_pointer(t_sea_state *state)
         len = 0;
       if (!(state->flags.bits & FLAG_MINUS))
         sea_handle_width(state, len, 0);
-      write(1, s, len);
+      sea_putstr_buf(state, s, len);
       state->total_len += len;
       if (state->flags.bits & FLAG_MINUS)
         sea_handle_width(state, len, 0);
@@ -140,7 +139,7 @@ void	sea_handle_int(t_sea_state *state)
 	}
 	else
 		write(1, prefix, prefix_len);
-	write(1, s, len);
+	sea_putstr_buf(state, s, len);
 	state->total_len += (len + prefix_len);
 	if (state->flags.bits & FLAG_MINUS)
 		sea_handle_width(state, len + prefix_len, 0);
@@ -167,7 +166,7 @@ void	sea_handle_unsigned(t_sea_state *state)
 
 	if (!(state->flags.bits & FLAG_MINUS))
 		sea_handle_width(state, len, is_zero_padded);
-	write(1, s, len);
+	sea_putstr_buf(state, s, len);
 	state->total_len += len;
 	if (state->flags.bits & FLAG_MINUS)
 		sea_handle_width(state, len, 0);
@@ -218,7 +217,7 @@ void	sea_handle_hex(t_sea_state *state, int is_upper)
 	}
 	else if (prefix_len)
 		(is_upper) ? sea_putstr_fd("0X", 1) : sea_putstr_fd("0x", 1);
-	write(1, s, len);
+	sea_putstr_buf(state, s, len);
 	state->total_len += (len + prefix_len);
 	if (state->flags.bits & FLAG_MINUS)
 		sea_handle_width(state, len + prefix_len, 0);
@@ -228,8 +227,7 @@ void	sea_handle_percent(t_sea_state *state)
 {
 	if (!(state->flags.bits & FLAG_MINUS))
 		sea_handle_width(state, 1, 0);
-	sea_putchar_fd('%', 1);
-	state->total_len++;
+	sea_putchar_buf(state, '%');
 	if (state->flags.bits & FLAG_MINUS)
 		sea_handle_width(state, 1, 0);
 }
@@ -270,7 +268,7 @@ void	sea_handle_float(t_sea_state *state)
 	}
 	else
 		write(1, prefix, prefix_len);
-	write(1, s, len);
+	sea_putstr_buf(state, s, len);
 	state->total_len += (len + prefix_len);
 	if (state->flags.bits & FLAG_MINUS)
 		sea_handle_width(state, len + prefix_len, 0);
