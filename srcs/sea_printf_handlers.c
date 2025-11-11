@@ -18,7 +18,7 @@
 /*      Filename: sea_printf_handlers.c                                       */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/11/02 15:13:25 by espadara                              */
-/*      Updated: 2025/11/11 16:43:55 by espadara                              */
+/*      Updated: 2025/11/11 17:01:20 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 #include "sea_printf.h"
@@ -50,7 +50,6 @@ void	sea_handle_string(t_sea_state *state)
     if (!(state->flags.bits & FLAG_MINUS))
       sea_handle_width(state, len, 0);
     sea_putstr_buf(state, s, len);
-    state->total_len += len;
     if (state->flags.bits & FLAG_MINUS)
       sea_handle_width(state, len, 0);
 }
@@ -72,19 +71,17 @@ void	sea_handle_pointer(t_sea_state *state)
       if (!(state->flags.bits & FLAG_MINUS))
         sea_handle_width(state, len, 0);
       sea_putstr_buf(state, s, len);
-      state->total_len += len;
       if (state->flags.bits & FLAG_MINUS)
         sea_handle_width(state, len, 0);
       return ;
 	}
   s = sea_utoa_base_buf(state, p, "0123456789abcdef");
   len = sea_strlen(s) + 2;
-	if (!(state->flags.bits & FLAG_MINUS))
+  if (!(state->flags.bits & FLAG_MINUS))
       sea_handle_width(state, len, 0);
-	sea_putstr_fd("0x", 1);
-	sea_putstr_fd(s, 1);
-	state->total_len += len;
-	if (state->flags.bits & FLAG_MINUS)
+  sea_putstr_buf(state, "0x", 2);
+  sea_putstr_buf(state, s, sea_strlen(s));
+  if (state->flags.bits & FLAG_MINUS)
       sea_handle_width(state, len, 0);
 }
 
@@ -128,19 +125,18 @@ void	sea_handle_int(t_sea_state *state)
 	{
 		if (is_zero_padded)
 		{
-			write(1, prefix, prefix_len);
+			sea_putstr_buf(state, prefix, prefix_len);
 			sea_handle_width(state, len + prefix_len, 1);
 		}
 		else
 		{
 			sea_handle_width(state, len + prefix_len, 0);
-			write(1, prefix, prefix_len);
+            sea_putstr_buf(state, prefix, prefix_len);
 		}
 	}
 	else
-		write(1, prefix, prefix_len);
+		sea_putstr_buf(state, prefix, prefix_len);
 	sea_putstr_buf(state, s, len);
-	state->total_len += (len + prefix_len);
 	if (state->flags.bits & FLAG_MINUS)
 		sea_handle_width(state, len + prefix_len, 0);
 }
@@ -167,7 +163,6 @@ void	sea_handle_unsigned(t_sea_state *state)
 	if (!(state->flags.bits & FLAG_MINUS))
 		sea_handle_width(state, len, is_zero_padded);
 	sea_putstr_buf(state, s, len);
-	state->total_len += len;
 	if (state->flags.bits & FLAG_MINUS)
 		sea_handle_width(state, len, 0);
 }
@@ -205,20 +200,19 @@ void	sea_handle_hex(t_sea_state *state, int is_upper)
 		if (is_zero_padded)
 		{
 			if (prefix_len)
-				(is_upper) ? sea_putstr_fd("0X", 1) : sea_putstr_fd("0x", 1);
+				sea_putstr_buf(state, is_upper ? "0X" : "0x", 2);
 			sea_handle_width(state, len + prefix_len, 1);
 		}
 		else
 		{
 			sea_handle_width(state, len + prefix_len, 0);
 			if (prefix_len)
-				(is_upper) ? sea_putstr_fd("0X", 1) : sea_putstr_fd("0x", 1);
+				sea_putstr_buf(state, is_upper ? "0X" : "0x", 2);
 		}
 	}
 	else if (prefix_len)
-		(is_upper) ? sea_putstr_fd("0X", 1) : sea_putstr_fd("0x", 1);
+		sea_putstr_buf(state, is_upper ? "0X" : "0x", 2);
 	sea_putstr_buf(state, s, len);
-	state->total_len += (len + prefix_len);
 	if (state->flags.bits & FLAG_MINUS)
 		sea_handle_width(state, len + prefix_len, 0);
 }
@@ -257,19 +251,18 @@ void	sea_handle_float(t_sea_state *state)
 	{
 		if (state->flags.bits & FLAG_ZERO)
 		{
-			write(1, prefix, prefix_len);
+            sea_putstr_buf(state, prefix, prefix_len);
 			sea_handle_width(state, len + prefix_len, 1);
 		}
 		else
 		{
 			sea_handle_width(state, len + prefix_len, 0);
-			write(1, prefix, prefix_len);
+			sea_putstr_buf(state, prefix, prefix_len);
 		}
 	}
 	else
-		write(1, prefix, prefix_len);
+		sea_putstr_buf(state, prefix, prefix_len);
 	sea_putstr_buf(state, s, len);
-	state->total_len += (len + prefix_len);
 	if (state->flags.bits & FLAG_MINUS)
 		sea_handle_width(state, len + prefix_len, 0);
 }
